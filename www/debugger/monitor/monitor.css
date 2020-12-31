@@ -1,0 +1,31 @@
+#monitor {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+#monitor__toolbar {
+    width: 100%;
+}
+
+#monitor__display {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+}
+
+.monitor__display__line {
+    width: 100%;
+}
+.monitor__display__line.active {
+    background-color: lightcyan;
+}
+
+.monitor__display__line__address {
+    display: inline-block;
+    width: 60px;
+}
+
+.monitor__display__line__word {
+    display: inline-block;
+    width: 60px;
+}

@@ -1,0 +1,14 @@
+#console {
+    display: flex;
+    flex-direction: column;
+}
+
+#console__output {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+}
+
+#console__input {
+    width: 100%;
+}

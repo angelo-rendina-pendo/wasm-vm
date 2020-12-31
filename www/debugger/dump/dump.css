@@ -1,0 +1,14 @@
+#dump {
+    display: flex;
+    flex-direction: column;
+}
+
+#dump__display {
+    flex: 1;
+    overflow: auto;
+}
+
+.dump__line__offset {
+    display: inline-block;
+    width: 60px;
+}
