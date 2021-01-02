@@ -67,4 +67,10 @@ impl VM {
     pub fn instruction_size(&self, addr: usize) -> usize {
         return self.vm.instruction_size(addr);
     }
+
+    // Return word count of the original vm.
+    #[wasm_bindgen(getter)]
+    pub fn word_count(&self) -> usize {
+        return self.vm.metadata.word_count;
+    }
 }

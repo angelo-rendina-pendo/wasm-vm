@@ -183,6 +183,13 @@ export class VM {
         var ret = wasm.vm_instruction_size(this.ptr, addr);
         return ret >>> 0;
     }
+    /**
+    * @returns {number}
+    */
+    get word_count() {
+        var ret = wasm.vm_word_count(this.ptr);
+        return ret >>> 0;
+    }
 }
 
 async function load(module, imports) {

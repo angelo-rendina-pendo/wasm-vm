@@ -11,6 +11,7 @@ export function vm_ram(a: number, b: number): void;
 export function vm_stack(a: number, b: number): void;
 export function vm_disasm(a: number, b: number, c: number): void;
 export function vm_instruction_size(a: number, b: number): number;
+export function vm_word_count(a: number): number;
 export function run(): void;
 export function __wbindgen_malloc(a: number): number;
 export function __wbindgen_free(a: number, b: number): void;

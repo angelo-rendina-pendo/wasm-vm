@@ -1,10 +1,10 @@
 import init from '../pkg/wasm_vm.js';
-import Debugger from './debugger/debugger.js';
+import App from './app/app.js';
 
 (async function () {
     await init();
     new Vue({
         el: '#app',
-        render: (h) => h(Debugger)
+        render: (h) => h(App)
     });
 })();

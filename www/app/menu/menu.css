@@ -1,0 +1,18 @@
+#menu {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu__section {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu__section__header {
+    font-size: small;
+    font-weight: bold;
+}
+.menu__section__header.active {
+    background-color: khaki;
+}

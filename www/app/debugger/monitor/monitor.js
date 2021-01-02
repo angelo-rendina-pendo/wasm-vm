@@ -50,8 +50,15 @@ export default {
         }
     },
     methods: {
-        onAddressChange(newAddress) {
-            this.localAddress = newAddress;
+        onAddressChange(event) {
+            const { value } = event.target;
+            const address = parseInt(value);
+            if (!isNaN(address) && address >= 0 && address < 32768) {
+                this.localAddress = address;
+            }
+        },
+        onAddressBlur(event) {
+            event.target.value = this.localAddress;
         },
         onFollowIP(isChecked) {
             this.followIP = isChecked;
@@ -73,14 +80,16 @@ export default {
                     attrs: {
                         type: 'number',
                         min: '0',
-                        max: '32767'
+                        max: '32767',
+                        placeholder: this.localAddress
                     },
                     domProps: {
                         value: this.localAddress,
                         disabled: this.followIP
                     },
                     on: {
-                        input: event => this.onAddressChange(parseInt(event.target.value))
+                        change: this.onAddressChange,
+                        blur: this.onAddressBlur
                     }
                 }),
                 h('button', {

@@ -1,18 +1,11 @@
-@import './menu/menu.css';
 @import './monitor/monitor.css';
 @import './console/console.css';
 @import './inspector/inspector.css';
 @import './dump/dump.css';
 
 #debugger {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-}
-
-#debugger__viewport {
     flex: 1;
+    height: 100%;
     display: grid;
     grid-template-columns: 400px 1fr;
     grid-template-rows: 50vh 50vh;

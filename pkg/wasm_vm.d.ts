@@ -46,6 +46,10 @@ export class VM {
 * @returns {Uint16Array}
 */
   readonly stack: Uint16Array;
+/**
+* @returns {number}
+*/
+  readonly word_count: number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -62,6 +66,7 @@ export interface InitOutput {
   readonly vm_stack: (a: number, b: number) => void;
   readonly vm_disasm: (a: number, b: number, c: number) => void;
   readonly vm_instruction_size: (a: number, b: number) => number;
+  readonly vm_word_count: (a: number) => number;
   readonly run: () => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number) => void;

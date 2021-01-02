@@ -1,0 +1,9 @@
+@import './menu/menu.css';
+@import "./debugger/debugger.css";
+@import './editor/editor.css';
+
+#app {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
