@@ -107,12 +107,60 @@ export default {
                 ...this.registers.map((v,i) => {
                     return h('tr', [
                         h('td', `r${i}`),
-                        h('td', v)
+                        h('td', [
+                            h('input', {
+                                attrs: {
+                                    type: 'number',
+                                    min: '0',
+                                    max: '32767',
+                                    style: 'width: 80px;'
+                                },
+                                domProps: {
+                                    value: v
+                                },
+                                on: {
+                                    change: event => {
+                                        const value = parseInt(event.target.value);
+                                        if (!isNaN(value) && value >= 0 && value < 32768) {
+                                            this.vm.set_register(i, value);
+                                            this.$emit('refreshRequested');
+                                        }
+                                    },
+                                    blur: event => {
+                                        event.target.value = this.vm.registers[i];
+                                    }
+                                }
+                            }),
+                        ])
                     ]);
                 }),
                 h('tr', [
                     h('td', 'IP'),
-                    h('td', this.ip)
+                    h('td', [
+                        h('input', {
+                            attrs: {
+                                type: 'number',
+                                min: '0',
+                                max: '32767',
+                                style: 'width: 80px;'
+                            },
+                            domProps: {
+                                value: this.ip
+                            },
+                            on: {
+                                change: event => {
+                                    const value = parseInt(event.target.value);
+                                    if (!isNaN(value) && value >= 0 && value < 32768) {
+                                        this.vm.set_ip(value);
+                                        this.$emit('refreshRequested');
+                                    }
+                                },
+                                blur: event => {
+                                    event.target.value = this.vm.ip;
+                                }
+                            }
+                        })
+                    ])
                 ])
             ])
         ]);

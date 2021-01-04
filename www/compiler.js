@@ -94,21 +94,30 @@ const INSTRUCTIONS = {
 
 const MACROS = {
     '!print': (line, tokens) => {
-        if (tokens.length !== 2) {
-            throw new Error(`Wrong arguments number in '${line}' (expected 2, got ${tokens.length})`);
+        if (tokens.length < 2) {
+            throw new Error(`Not enough arguments in '${line}`);
+        }
+        if ((line.match(/\`/g) || []).length !== 2) {
+            throw new Error(`Malformed expression in '${line}' (missing backticks?)`);
+        }
+        const quotedTokens = line.split('`');
+        if (quotedTokens.length !== 3) {
+            throw new Error(`Malformed expression in '${line}'`);
+        }
+        if (quotedTokens[0] !== '!print ' || quotedTokens[2] !== '') {
+            throw new Error(`Malformed expression in '${line}'`);
         }
         const lines = [];
-        for(let i = 0; i < tokens[1].length; i++) {
-            const c = tokens[1].charCodeAt(i);
+        for(let i = 0; i < quotedTokens[1].length; i++) {
+            const c = quotedTokens[1].charCodeAt(i);
             lines.push(`OUT ${c}`);
         }
         return lines;
     },
     '!println': (line, tokens) => {
-        let lines = [];
-        if (tokens.length > 1) {
-            lines = MACROS['!print'](line, tokens);
-        } 
+        const newTokens = [...tokens];
+        newTokens[0] = '!print';
+        let lines = MACROS['!print'](newTokens.join(' '), tokens);
         lines.push('OUT 10');
         return lines;
     },
@@ -131,7 +140,7 @@ function parseImmediate(imm) {
         }
     } else {
         const n = parseInt(imm);
-        if (!isNaN(n) && n >= 0 && n < 32768) {
+        if (!isNaN(n) && n >= 0 && n < 32776) {
             return n;
         }
     }

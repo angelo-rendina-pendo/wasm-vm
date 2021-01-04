@@ -21,6 +21,20 @@ export class VM {
 */
   input(address: number, value: number): void;
 /**
+* @param {number} index
+* @param {number} value
+*/
+  set_register(index: number, value: number): void;
+/**
+* @param {number} value
+*/
+  set_ip(value: number): void;
+/**
+* @param {number} offset
+* @param {number} value
+*/
+  set_stack(offset: number, value: number): void;
+/**
 * @param {number} addr
 * @returns {string}
 */
@@ -35,9 +49,9 @@ export class VM {
 */
   readonly ip: number;
 /**
-* @returns {Uint16Array}
+* @returns {number}
 */
-  readonly ram: Uint16Array;
+  readonly ram: number;
 /**
 * @returns {Uint16Array}
 */
@@ -61,9 +75,12 @@ export interface InitOutput {
   readonly vm_step: (a: number, b: number) => void;
   readonly vm_input: (a: number, b: number, c: number) => void;
   readonly vm_registers: (a: number, b: number) => void;
+  readonly vm_set_register: (a: number, b: number, c: number) => void;
   readonly vm_ip: (a: number) => number;
-  readonly vm_ram: (a: number, b: number) => void;
+  readonly vm_set_ip: (a: number, b: number) => void;
+  readonly vm_ram: (a: number) => number;
   readonly vm_stack: (a: number, b: number) => void;
+  readonly vm_set_stack: (a: number, b: number, c: number) => void;
   readonly vm_disasm: (a: number, b: number, c: number) => void;
   readonly vm_instruction_size: (a: number, b: number) => number;
   readonly vm_word_count: (a: number) => number;

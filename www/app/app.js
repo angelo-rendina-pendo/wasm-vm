@@ -29,8 +29,8 @@ export default {
                 this.$refs.debugger.onCompiledToDebugger(bytecode);
             });
         },
-        onDisassembled() {
-            this.source = this.$refs.debugger.disassemble();
+        onDisassembled(source) {
+            this.source = source;
             this.view = 'editor';
         }
     },
@@ -42,8 +42,7 @@ export default {
                 attrs: { id: 'menu' },
                 on: {
                     fileOpened: this.onFileOpened,
-                    editorOpened: this.onEditorOpened,
-                    disassembled: this.onDisassembled
+                    editorOpened: this.onEditorOpened
                 },
                 props: {
                     view: this.view
@@ -51,7 +50,10 @@ export default {
             }),
             ...(this.view === 'debugger' ? [
                 h(Debugger, {
-                    ref: 'debugger'
+                    ref: 'debugger',
+                    on: {
+                        disassembled: this.onDisassembled
+                    }
                 }),
             ] : []),
             ...(this.view === 'editor' ? [

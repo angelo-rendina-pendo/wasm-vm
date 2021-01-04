@@ -6,12 +6,29 @@
 #debugger {
     flex: 1;
     height: 100%;
+    display: flex;
+}
+
+#debugger__viewport {
+    flex: 1;
+    height: 100%;
     display: grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 500px 1fr;
     grid-template-rows: 50vh 50vh;
 }
 
 .debugger__quadrant__title {
     font-size: large;
+    font-weight: bold;
+}
+
+#debugger__toolbar {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.debugger__toolbar__header {
+    font-size: small;
     font-weight: bold;
 }

@@ -8,5 +8,5 @@ pub mod codec;
 // Additional functionality for live debugger.
 pub mod debugger;
 
-// Wrapper for Rust to JS via WASM
-pub mod wrapper;
+// Implementations for multiple target architectures
+pub mod targets;

@@ -32,7 +32,11 @@ export default {
             let address = this.address;
             while (address < 32768) {
                 const size = this.vm.instruction_size(address);
-                const word = this.vm.ram[address];
+                let words = [];
+                for(let i = 0; i < size; i++) {
+                    const [lb, hb] = new Uint8Array(window.wasm.memory.buffer, this.vm.ram + (address + i) * 2, 2);
+                    words.push(lb + 256 * hb);
+                }
                 let mnemonic = this.vm.disasm(address);
                 if (this.decodeASCII && mnemonic.startsWith('OUT')) {
                     const v = parseInt(mnemonic.substring(4));
@@ -40,7 +44,7 @@ export default {
                 }
                 lines.push({
                     address,
-                    word,
+                    words,
                     mnemonic
                 });
                 address += size;
@@ -121,9 +125,11 @@ export default {
                     attrs: { class: 'monitor__display__line__address' }
                 }, 'Address'),
                 h('span', {
+                    attrs: { class: 'monitor__display__line__mnemonic' }
+                }, 'Mnemonic'),
+                h('span', {
                     attrs: { class: 'monitor__display__line__word' }
-                }, 'Word'),
-                h('span', 'Mnemonic'),
+                }, 'Raw')
             ]),
             h('div', {
                 attrs: { id: 'monitor__display' }
@@ -138,9 +144,11 @@ export default {
                         attrs: { class: 'monitor__display__line__address' }
                     }, line.address),
                     h('span', {
+                        attrs: { class: 'monitor__display__line__mnemonic' }
+                    }, line.mnemonic),
+                    h('span', {
                         attrs: { class: 'monitor__display__line__word' }
-                    }, line.word),
-                    h('span', line.mnemonic)
+                    }, line.words.map(word => h('span', word)))                    
                 ])
             }))
         ]);

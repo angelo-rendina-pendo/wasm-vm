@@ -30,6 +30,12 @@ export default {
             return lines;
         }
     },
+    methods: {
+        getStackValue(offset) {
+            const stackDepth = this.vm.stack.length;
+            return this.vm.stack[stackDepth - offset - 1];
+        }
+    },
     render: function(h) {
         return h('div', [
             h('div', {
@@ -50,7 +56,30 @@ export default {
                     h('span', {
                         attrs: { class: 'dump__line__offset' }
                     }, line.offset),
-                    h('span', line.value)
+                    h('input', {
+                        attrs: {
+                            type: 'number',
+                            min: '0',
+                            max: '32767',
+                            style: 'width: 80px;'
+                        },
+                        domProps: {
+                            value: line.value
+                        },
+                        on: {
+                            change: event => {
+                                const value = parseInt(event.target.value);
+                                if (!isNaN(value) && value >= 0 && value < 32768) {
+                                    const stackDepth = this.vm.stack.length;
+                                    this.vm.set_stack(stackDepth - line.offset - 1, value);
+                                    this.$emit('refreshRequested');
+                                }
+                            },
+                            blur: event => {
+                                event.target.value = this.getStackValue(line.offset);
+                            }
+                        }
+                    })
                 ]);
             }))
         ]);

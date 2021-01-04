@@ -19,9 +19,6 @@ export default {
         },
         onOpenEditor() {
             this.$emit('editorOpened');
-        },
-        onDisassemble() {
-            this.$emit('disassembled');
         }
     },
     render: function(h) {
@@ -45,11 +42,7 @@ export default {
                         type: 'file'
                     },
                     on: { change: this.onFileChange }
-                }),
-                h('button', {
-                    on: { click: this.onDisassemble },
-                    domProps: { disabled: this.view !== 'debugger' }
-                }, 'Disassemble')
+                })
             ]),
             h('div', {
                 attrs: { class: 'menu__section' },

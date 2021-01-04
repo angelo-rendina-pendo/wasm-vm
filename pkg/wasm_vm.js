@@ -118,6 +118,13 @@ export class VM {
         }
     }
     /**
+    * @param {number} index
+    * @param {number} value
+    */
+    set_register(index, value) {
+        wasm.vm_set_register(this.ptr, index, value);
+    }
+    /**
     * @returns {number}
     */
     get ip() {
@@ -125,21 +132,17 @@ export class VM {
         return ret >>> 0;
     }
     /**
-    * @returns {Uint16Array}
+    * @param {number} value
+    */
+    set_ip(value) {
+        wasm.vm_set_ip(this.ptr, value);
+    }
+    /**
+    * @returns {number}
     */
     get ram() {
-        try {
-            const retptr = wasm.__wbindgen_export_1.value - 16;
-            wasm.__wbindgen_export_1.value = retptr;
-            wasm.vm_ram(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            var v0 = getArrayU16FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 2);
-            return v0;
-        } finally {
-            wasm.__wbindgen_export_1.value += 16;
-        }
+        var ret = wasm.vm_ram(this.ptr);
+        return ret;
     }
     /**
     * @returns {Uint16Array}
@@ -157,6 +160,13 @@ export class VM {
         } finally {
             wasm.__wbindgen_export_1.value += 16;
         }
+    }
+    /**
+    * @param {number} offset
+    * @param {number} value
+    */
+    set_stack(offset, value) {
+        wasm.vm_set_stack(this.ptr, offset, value);
     }
     /**
     * @param {number} addr

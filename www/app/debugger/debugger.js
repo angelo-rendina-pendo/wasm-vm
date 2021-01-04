@@ -3,6 +3,7 @@ import Console from './console/console.js';
 import Inspector from './inspector/inspector.js';
 import Dump from './dump/dump.js';
 import { VM } from '../../../pkg/wasm_vm.js';
+import { disassemble } from '../../disassembler.js';
 
 export default {
     name: 'Debugger',
@@ -16,22 +17,22 @@ export default {
             breakpointInterrupt: false
         };
     },
+    props: {
+        wasm: {
+            type: Object,
+            default: null
+        }
+    },
     methods: {
         disassemble() {
-            const wordCount = this.vm.word_count;
-            const lines = [];
-            let address = 0;
-            while (address < wordCount) {
-                const mnemonic = this.vm.disasm(address);
-                if (mnemonic === '??') {
-                    const word = this.vm.ram[address];
-                    lines.push(`?? ${word}`);
-                } else {
-                    lines.push(mnemonic);
-                }
-                address += this.vm.instruction_size(address);
-            }
-            return lines.join('\n');
+            const options = {
+                outToMacro: this.$refs.outToMacroCheckbox.checked,
+                jumpToLabel: this.$refs.jumpToLabelCheckbox.checked,
+                callToLabel: this.$refs.callToLabelCheckbox.checked,
+                memsToLabel: this.$refs.memsToLabelCheckbox.checked
+            };
+            const lines = disassemble(this.vm, options);
+            this.$emit('disassembled', lines.join('\n'));
         },
         onVmLoaded(vm) {
             this.vm = vm;
@@ -116,45 +117,96 @@ export default {
         return h('div', {
             attrs: { id: 'debugger' }
         }, this.vm ? [
-            h(Monitor, {
-                attrs: { id: 'monitor' },
-                props: {
-                    vm: this.vm,
-                    refresh: this.refresh
-                }
-            }),
-            h(Console, {
-                attrs: { id: 'console' },
-                ref: 'console',
-                props: {
-                    vm: this.vm
-                }
-            }),
-            h(Dump, {
-                attrs: { id: 'dump' },
-                props: {
-                    vm: this.vm,
-                    refresh: this.refresh
-                }
-            }),
-            h(Inspector, {
-                attrs: { id: 'inspector' },
-                props: {
-                    vm: this.vm,
-                    refresh: this.refresh,
-                    inputInterrupt: this.inputInterrupt,
-                    halted: this.halted,
-                    breakpoint: this.breakpoint,
-                    breakpointInterrupt: this.breakpointInterrupt
-                },
-                on: {
-                    step: this.step,
-                    run: this.run,
-                    breakpointChanged: this.onBreakpointChanged
-                }
-            })
+            h('div', {
+                attrs: { id: 'debugger__viewport' }
+            }, [
+                h(Monitor, {
+                    attrs: { id: 'monitor' },
+                    props: {
+                        vm: this.vm,
+                        refresh: this.refresh
+                    }
+                }),
+                h(Console, {
+                    attrs: { id: 'console' },
+                    ref: 'console',
+                    props: {
+                        vm: this.vm
+                    }
+                }),
+                h(Dump, {
+                    attrs: { id: 'dump' },
+                    props: {
+                        vm: this.vm,
+                        refresh: this.refresh
+                    }
+                }),
+                h(Inspector, {
+                    attrs: { id: 'inspector' },
+                    props: {
+                        vm: this.vm,
+                        refresh: this.refresh,
+                        inputInterrupt: this.inputInterrupt,
+                        halted: this.halted,
+                        breakpoint: this.breakpoint,
+                        breakpointInterrupt: this.breakpointInterrupt
+                    },
+                    on: {
+                        step: this.step,
+                        run: this.run,
+                        breakpointChanged: this.onBreakpointChanged,
+                        refreshRequested: this.doRefresh
+                    }
+                })
+            ]),
+            h('div', {
+                attrs: { id: 'debugger__toolbar' }
+            }, [
+                h('div', {
+                    attrs: { class: 'debugger__toolbar__header' }
+                }, 'Disassemble'),
+                h('span', [
+                    h('input', {
+                        ref: 'outToMacroCheckbox',
+                        attrs: {
+                            type: 'checkbox'
+                        }
+                    }),
+                    h('label', 'OUT to macro')
+                ]),
+                h('span', [
+                    h('input', {
+                        ref: 'jumpToLabelCheckbox',
+                        attrs: {
+                            type: 'checkbox'
+                        }
+                    }),
+                    h('label', 'Jumps to label')
+                ]),
+                h('span', [
+                    h('input', {
+                        ref: 'callToLabelCheckbox',
+                        attrs: {
+                            type: 'checkbox'
+                        }
+                    }),
+                    h('label', 'CALL to label'),
+                ]),
+                h('span', [
+                    h('input', {
+                        ref: 'memsToLabelCheckbox',
+                        attrs: {
+                            type: 'checkbox'
+                        }
+                    }),
+                    h('label', 'MEMs to label')
+                ]),
+                h('button', {
+                    on: { click: this.disassemble }
+                }, 'Disassemble')
+            ])
         ] : [
-            h('div', 'Load a binary file to start the debugger.')
+            h('span', 'Loading...')
         ]);
     }
 };

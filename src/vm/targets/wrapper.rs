@@ -40,22 +40,38 @@ impl VM {
         return self.vm.ram[32768..32776].to_vec();
     }
 
+    // JS set register.
+    pub fn set_register(&mut self, index: usize, value: u16) {
+        self.vm.ram[32768 + index] = value;
+    }
+
     // JS getter for the VM ip.
     #[wasm_bindgen(getter)]
     pub fn ip(&self) -> usize {
         return self.vm.ip;
     }
 
-    // JS getter for the VM ram.
+    // JS set register.
+    pub fn set_ip(&mut self, value: usize) {
+        self.vm.ip = value;
+    }
+
+    // JS getter for the pointer to the ram in linear memory.
+    // Must be read from .memory.buffer.
     #[wasm_bindgen(getter)]
-    pub fn ram(&self) -> Vec<u16> {
-        return self.vm.ram[0..32768].to_vec();
+    pub fn ram(&self) -> *const u16 {
+        return self.vm.ram[0..32768].as_ptr();
     }
 
     // JS getter for the VM stack.
     #[wasm_bindgen(getter)]
     pub fn stack(&self) -> Vec<u16> {
         return self.vm.stack.clone();
+    }
+
+    // JS set stack entry.
+    pub fn set_stack(&mut self, offset: usize, value: u16) {
+        self.vm.stack[offset] = value;
     }
 
     // Return a mnemonic String for the instruction at given address.
