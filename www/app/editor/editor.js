@@ -3,9 +3,13 @@ import { compile } from '../../compiler.js';
 export default {
     name: 'Editor',
     props: {
-        source: {
+        sources: {
+            type: Object,
+            required: true
+        },
+        currentSource: {
             type: String,
-            default: ''
+            required: true
         }
     },
     data() {
@@ -13,9 +17,23 @@ export default {
             status: 'Idle'
         };
     },
+    computed: {
+        activeSource() {
+            return this.sources[this.currentSource];
+        }
+    },
     methods: {
+        onCreateNewSource() {
+            this.$emit('sourceCreated');
+        },
+        onClosing(key) {
+            this.$emit('sourceClosed', key);
+        },
+        onSelection(key) {
+            this.$emit('sourceSelected', key);
+        },
         onSourceInput(event) {
-            this.$emit('sourceChanged', event.target.value);
+            this.$emit('sourceChanged', this.currentSource, event.target.value);
         },
         openFile() {
             const fileInput = this.$refs.editorLoadInput;
@@ -29,7 +47,7 @@ export default {
                 const reader = new FileReader();
                 reader.addEventListener('loadend', (event) => {
                     const buffer = event.target.result;
-                    this.$emit('sourceChanged', buffer);
+                    this.$emit('sourceImported', file.name, buffer);
                     this.status = 'Loaded file';
                 });
                 reader.readAsText(file);
@@ -39,7 +57,7 @@ export default {
             let filename = this.$refs.saveFileInput.value || 'source.txt';
             this.status = 'Saved to file (in download)'
             let element = document.createElement('a');
-            const blob = new Blob([this.source], {type: "text/plain"});
+            const blob = new Blob([this.activeSource], {type: "text/plain"});
             const url = window.URL.createObjectURL(blob);
             element.setAttribute('href', url);
             element.setAttribute('download', filename);
@@ -52,7 +70,7 @@ export default {
         compileToFile() {
             try {
                 let filename = this.$refs.compileFileInput.value || 'compiled.bin';
-                const bytecode = compile(this.source);
+                const bytecode = compile(this.activeSource);
                 this.status = 'Compiled to file (in download)'
                 let element = document.createElement('a');
                 const blob = new Blob([bytecode], {type: "octet/stream"});
@@ -70,7 +88,7 @@ export default {
         },
         compileToDebugger() {
             try {
-                const bytecode = compile(this.source);
+                const bytecode = compile(this.activeSource);
                 this.$emit('compiledToDebugger', bytecode);
             } catch (error) {
                 this.status = error;
@@ -114,25 +132,52 @@ export default {
                 '# After running the program, the values 42 to 46 should be loaded in memory from address .values',
                 '# We pushed that address for clarity to the top of the stack for clarity'
             ];
-            this.$emit('sourceChanged', lines.join('\n'));
+            this.$emit('sourceCreated', lines.join('\n'));
         }
     },
     render: function(h) {
         return h('div', {
             attrs: { id: 'editor' }
         }, [
-            h('textarea', {
-                attrs: {
-                    id: 'editor__text-area',
-                    spellcheck: 'false'
-                },
-                domProps: {
-                    value: this.source
-                },
-                on: {
-                    input: this.onSourceInput
-                }
-            }),
+            h('div', {
+                attrs: { id: 'editor__viewport' }
+            }, [
+                h('div', {
+                    attrs: { id: 'editor__selector' }
+                }, [
+                    ...Object.keys(this.sources).map(key => {
+                        return h('div', {
+                            class: {
+                                editor__selector__entry: true,
+                                active: this.currentSource === key
+                            },
+                            on: {
+                                click: () => { this.onSelection(key); }
+                            }
+                        }, [
+                            h('span', key),
+                            h('span', {
+                                on: { click: () => { this.onClosing(key); } }
+                            }, '×')
+                        ]);
+                    }),
+                    h('button', {
+                        on: { click: this.onCreateNewSource }
+                    }, '+')
+                ]),
+                h('textarea', {
+                    attrs: {
+                        id: 'editor__text-area',
+                        spellcheck: 'false'
+                    },
+                    domProps: {
+                        value: this.activeSource
+                    },
+                    on: {
+                        input: this.onSourceInput
+                    }
+                })
+            ]),
             h('div', {
                 attrs: { id: 'editor__toolbar' }
             }, [
