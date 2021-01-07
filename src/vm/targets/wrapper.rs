@@ -63,6 +63,11 @@ impl VM {
         return self.vm.ram[0..32768].as_ptr();
     }
 
+    // JS set ram entry.
+    pub fn set_ram(&mut self, address: usize, value: u16) {
+        self.vm.ram[address] = value;
+    }
+
     // JS getter for the VM stack.
     #[wasm_bindgen(getter)]
     pub fn stack(&self) -> Vec<u16> {

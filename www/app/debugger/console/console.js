@@ -7,6 +7,10 @@ export default {
         vm: {
             type: Object,
             default: null
+        },
+        handheldMode: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -14,7 +18,6 @@ export default {
             outputBuffer: '',
             inputBuffer: '',
             enterBuffered: false,
-            handheldMode: false,
             padState: 0
         };
     },
@@ -59,7 +62,7 @@ export default {
             this.outputBuffer = '';
         },
         toggleHandheld() {
-            this.handheldMode = !this.handheldMode;
+            this.$emit('handheldModeChanged', !this.handheldMode);
         },
         onPadStateChanged(state) {
             this.padState = state;

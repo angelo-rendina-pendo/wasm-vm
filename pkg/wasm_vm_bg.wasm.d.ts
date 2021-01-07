@@ -10,6 +10,7 @@ export function vm_set_register(a: number, b: number, c: number): void;
 export function vm_ip(a: number): number;
 export function vm_set_ip(a: number, b: number): void;
 export function vm_ram(a: number): number;
+export function vm_set_ram(a: number, b: number, c: number): void;
 export function vm_stack(a: number, b: number): void;
 export function vm_set_stack(a: number, b: number, c: number): void;
 export function vm_disasm(a: number, b: number, c: number): void;

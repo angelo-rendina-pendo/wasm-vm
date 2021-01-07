@@ -145,6 +145,13 @@ export class VM {
         return ret;
     }
     /**
+    * @param {number} address
+    * @param {number} value
+    */
+    set_ram(address, value) {
+        wasm.vm_set_ram(this.ptr, address, value);
+    }
+    /**
     * @returns {Uint16Array}
     */
     get stack() {

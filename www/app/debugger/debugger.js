@@ -15,7 +15,9 @@ export default {
             halted: false,
             breakpoint: null,
             breakpointInterrupt: false,
-            running: false
+            running: false,
+            handheldMode: false,
+            runStartDate: null
         };
     },
     props: {
@@ -41,6 +43,7 @@ export default {
             this.halted = false;
             this.breakpointInterrupt = false;
             this.breakpoint = null;
+            this.runStartDate = null;
             this.$nextTick(() => {
                 this.$refs.console.onClear();
             });
@@ -64,6 +67,17 @@ export default {
             this.handleInterrupt(interrupt);
             this.doRefresh();
         },
+        writeHandheldClock() {
+            const elapsed = Date.now() - this.runStartDate;
+            this.vm.set_ram(32510, Math.floor(elapsed / 1000));
+            this.vm.set_ram(32511, Math.floor(elapsed % 1000));
+        },
+        doStop () {
+            this.writeHandheldClock();
+            this.runStartDate = null;
+            this.running = false;
+            this.doRefresh();
+        },
         doRun() {
             if (this.running) {
                 for (let i = 0; i < 2000; i++) {
@@ -71,8 +85,7 @@ export default {
                         const bp = this.breakpoint;
                         if (bp !== null && bp === this.vm.ip) {
                             this.breakpointInterrupt = true;
-                            this.running = false;
-                            this.doRefresh();
+                            this.doStop();
                             return;
                         }
                     }
@@ -80,11 +93,11 @@ export default {
                     const interrupt = this.inputInterrupt || this.vm.step();
                     const handled = this.handleInterrupt(interrupt);
                     if (!handled) {
-                        this.running = false;
-                        this.doRefresh();
+                        this.doStop();
                         return;
                     };
                 }
+                this.writeHandheldClock();
                 setTimeout(this.doRun, 0);
             } else {
                 this.doRefresh();
@@ -92,10 +105,14 @@ export default {
         },
         run() {
             this.running = true;
+            this.runStartDate = Date.now();
             this.doRun();
         },
         pause() {
             this.running = false;
+        },
+        onHandheldModeChanged(mode) {
+            this.handheldMode = mode;
         },
         onBreakpointChanged(value) {
             const address = parseInt(value);
@@ -149,7 +166,11 @@ export default {
                     attrs: { id: 'console' },
                     ref: 'console',
                     props: {
-                        vm: this.vm
+                        vm: this.vm,
+                        handheldMode: this.handheldMode
+                    },
+                    on: {
+                        handheldModeChanged: this.onHandheldModeChanged
                     }
                 }),
                 h(Dump, {

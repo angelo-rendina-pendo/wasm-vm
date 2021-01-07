@@ -30,6 +30,11 @@ export class VM {
 */
   set_ip(value: number): void;
 /**
+* @param {number} address
+* @param {number} value
+*/
+  set_ram(address: number, value: number): void;
+/**
 * @param {number} offset
 * @param {number} value
 */
@@ -79,6 +84,7 @@ export interface InitOutput {
   readonly vm_ip: (a: number) => number;
   readonly vm_set_ip: (a: number, b: number) => void;
   readonly vm_ram: (a: number) => number;
+  readonly vm_set_ram: (a: number, b: number, c: number) => void;
   readonly vm_stack: (a: number, b: number) => void;
   readonly vm_set_stack: (a: number, b: number, c: number) => void;
   readonly vm_disasm: (a: number, b: number, c: number) => void;
