@@ -110,6 +110,37 @@ export default {
                 this.status = error;
             }
         },
+        renameSymbol() {
+            try {
+                const from = this.$refs.renameSymbolFrom.value;
+                const to = this.$refs.renameSymbolTo.value;
+                if (!from || from.includes(' ')) {
+                    throw new Error(`${from} is not a valid symbol`);
+                }
+                if (!to || to.includes(' ')) {
+                    throw new Error(`${to} is not a valid symbol`);
+                }
+                const TYPES = {
+                    ':': 'label',
+                    '.': 'data'
+                }
+                const fromType = TYPES[from.charAt(0)];
+                if (!fromType) {
+                    throw new Error(`${from} is not a valid symbol`);
+                }
+                const toType = TYPES[to.charAt(0)];
+                if (!toType) {
+                    throw new Error(`${to} is not a valid symbol`);
+                }
+                if (fromType !== toType) {
+                    throw new Error(`${from} and ${to} are different types`);
+                }
+                const fromRegex = new RegExp(`\\B${from.charAt(0)}\\b${from.substring(1)}\\b(?=($|\\s))`, 'g');
+                this.$emit('sourceChanged', this.currentSource, this.activeSource.replaceAll(fromRegex, to));
+            } catch (error) {
+                this.status = error;
+            }
+        },
         showExample() {
             const lines = [
                 '# This is a comment, will be ignored',
@@ -236,6 +267,23 @@ export default {
                                 }
                             }
                         }
+                    })
+                ]),
+                h('div', {
+                    attrs: { class: 'editor__toolbar__header' }
+                }, 'Edit'),
+                h('div', {
+                    attrs: { class: 'editor__toolbar__flex' }
+                }, [
+                    h('label', 'Rename symbol'),
+                    h('input', {
+                        ref: 'renameSymbolFrom'
+                    }),
+                    h('button', {
+                        on: { click: this.renameSymbol }
+                    }, 'to'),
+                    h('input', {
+                        ref: 'renameSymbolTo'
                     })
                 ]),
                 h('div', {

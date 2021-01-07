@@ -82,3 +82,11 @@
 .editor__toolbar__target > *:first-child {
     flex: 2;
 }
+
+.editor__toolbar__flex {
+    display: flex;
+}
+.editor__toolbar__flex > input,
+.editor__toolbar__flex > button {
+    flex: 1;
+}
