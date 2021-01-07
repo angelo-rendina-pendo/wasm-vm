@@ -1,0 +1,47 @@
+#pad {
+    display: grid;
+    grid-template-rows: 32px 32px;
+    grid-template-columns: repeat(6, 32px);
+    grid-gap: 4px;
+}
+
+#pad__w {
+    grid-row: 1;
+    grid-column: 2;
+}
+
+#pad__a {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+#pad__s {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+#pad__d {
+    grid-row: 2;
+    grid-column: 3;
+}
+
+#pad__k {
+    grid-row: 2;
+    grid-column: 5;
+}
+
+#pad__l {
+    grid-row: 2;
+    grid-column: 6;
+}
+
+.pad__button {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    line-height: 32px;
+    background-color: cyan;
+}
+.pad__button.active {
+    background-color: cornflowerblue;
+}

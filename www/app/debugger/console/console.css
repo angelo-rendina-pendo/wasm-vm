@@ -1,3 +1,6 @@
+@import './display/display.css';
+@import './pad/pad.css';
+
 #console {
     display: flex;
     flex-direction: column;
@@ -11,4 +14,18 @@
 
 #console__input {
     width: 100%;
+}
+
+#console__handheld {
+    display: flex;
+    width: 100%;
+    max-width: 550px;
+}
+
+#console__pad {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
