@@ -23,10 +23,26 @@ export default {
         }
     },
     methods: {
+        onFileRenamed(event) {
+            const name = event.target.value;
+            if (name === this.currentSource) return;
+            if (name && this.sources[name] === undefined) {
+                this.status = `${this.currentSource} renamed to ${name}`;
+                this.$emit('sourceRenamed', name);
+            } else {
+                this.$refs.currentFilenameInput.value = this.currentSource;
+                this.status = name ? `Cannot rename: ${name} already exists` : 'Cannot rename: Name must be non empty';
+            }
+        },
         onCreateNewSource() {
             this.$emit('sourceCreated');
         },
         onClosing(key) {
+            const source = this.sources[key];
+            if (source) {
+                const confirmed = window.confirm(`Source ${key} is non empty. Confirm closing?`);
+                if (!confirmed) return;
+            }
             this.$emit('sourceClosed', key);
         },
         onSelection(key) {
@@ -157,13 +173,31 @@ export default {
                         }, [
                             h('span', key),
                             h('span', {
-                                on: { click: () => { this.onClosing(key); } }
+                                on: {
+                                    click: (event) => {
+                                    event.stopPropagation();
+                                    this.onClosing(key);
+                                    }
+                                }
                             }, '×')
                         ]);
                     }),
                     h('button', {
                         on: { click: this.onCreateNewSource }
-                    }, '+')
+                    }, '+'),
+                    h('button', {
+                        on: { click: this.openFile }
+                    }, [
+                        h('input', {
+                            ref: 'editorLoadInput',
+                            attrs: {
+                                style: 'display: none;',
+                                type: 'file'
+                            },
+                            on: { change: this.onFileChange }
+                        }),
+                        h('span', 'Import')
+                    ])
                 ]),
                 h('textarea', {
                     attrs: {
@@ -183,18 +217,30 @@ export default {
             }, [
                 h('div', {
                     attrs: { class: 'editor__toolbar__header' }
+                }, 'Properties'),
+                h('div', {
+                    attrs: { class: 'editor__toolbar__property' }
+                }, [
+                    h('label', 'Name:'),
+                    h('input', {
+                        ref: 'currentFilenameInput',
+                        domProps: {
+                            value: this.currentSource,
+                            placeholder: this.currentSource
+                        },
+                        on: {
+                            blur: this.onFileRenamed,
+                            keydown: event => {
+                                if (event.key === 'Enter') {
+                                    this.onFileRenamed(event);
+                                }
+                            }
+                        }
+                    })
+                ]),
+                h('div', {
+                    attrs: { class: 'editor__toolbar__header' }
                 }, 'File'),
-                h('button', {
-                    on: { click: this.openFile }
-                }, 'Load'),
-                h('input', {
-                    ref: 'editorLoadInput',
-                    attrs: {
-                        style: 'display: none;',
-                        type: 'file'
-                    },
-                    on: { change: this.onFileChange }
-                }),
                 h('div', {
                     attrs: { class: 'editor__toolbar__target' }
                 }, [

@@ -79,9 +79,19 @@ export default {
             }
         },
         onSourceClosed(name) {
+            const position = Object.keys(this.sources).indexOf(name);
             this.$delete(this.sources, name);
             if (name === this.currentSource) {
-                this.currentSource = Object.keys(this.sources)[0] || this.createNewSource();
+                const newKeyAtPosition = Object.keys(this.sources)[position];
+                if (newKeyAtPosition) {
+                    this.currentSource = newKeyAtPosition;
+                } else {
+                    if (position > 0) {
+                        this.currentSource = Object.keys(this.sources)[position - 1];
+                     } else {
+                         this.currentSource = this.createNewSource();
+                    }
+                }
             }
         },
         onSourceSelected(name) {
@@ -89,6 +99,12 @@ export default {
         },
         onSourceChanged(name, source) {
             this.$set(this.sources, name, source);
+        },
+        onSourceRenamed(name) {
+            const source = this.sources[this.currentSource];
+            this.$set(this.sources, name, source);
+            this.$delete(this.sources, this.currentSource);
+            this.currentSource = name;
         },
         onFileOpened(file) {
             this.view = 'debugger';
@@ -146,7 +162,8 @@ export default {
                         sourceSelected: this.onSourceSelected,
                         sourceClosed: this.onSourceClosed,
                         sourceImported: this.onSourceImported,
-                        sourceCreated: this.onSourceCreated
+                        sourceCreated: this.onSourceCreated,
+                        sourceRenamed: this.onSourceRenamed
                     }
                 }),
             ] : []),
