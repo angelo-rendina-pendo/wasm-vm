@@ -14,7 +14,8 @@ export default {
             inputInterrupt: null,
             halted: false,
             breakpoint: null,
-            breakpointInterrupt: false
+            breakpointInterrupt: false,
+            running: false
         };
     },
     props: {
@@ -63,21 +64,38 @@ export default {
             this.handleInterrupt(interrupt);
             this.doRefresh();
         },
-        run() {
-            while (true) {
-                if (!this.breakpointInterrupt) {
-                    const bp = this.breakpoint;
-                    if (bp !== null && bp === this.vm.ip) {
-                        this.breakpointInterrupt = true;
-                        break;
+        doRun() {
+            if (this.running) {
+                for (let i = 0; i < 2000; i++) {
+                    if (!this.breakpointInterrupt) {
+                        const bp = this.breakpoint;
+                        if (bp !== null && bp === this.vm.ip) {
+                            this.breakpointInterrupt = true;
+                            this.running = false;
+                            this.doRefresh();
+                            return;
+                        }
                     }
+                    this.breakpointInterrupt = false;
+                    const interrupt = this.inputInterrupt || this.vm.step();
+                    const handled = this.handleInterrupt(interrupt);
+                    if (!handled) {
+                        this.running = false;
+                        this.doRefresh();
+                        return;
+                    };
                 }
-                this.breakpointInterrupt = false;
-                const interrupt = this.inputInterrupt || this.vm.step();
-                const handled = this.handleInterrupt(interrupt);
-                if (!handled) break;
+                setTimeout(this.doRun, 0);
+            } else {
+                this.doRefresh();
             }
-            this.doRefresh();
+        },
+        run() {
+            this.running = true;
+            this.doRun();
+        },
+        pause() {
+            this.running = false;
         },
         onBreakpointChanged(value) {
             const address = parseInt(value);
@@ -149,11 +167,13 @@ export default {
                         inputInterrupt: this.inputInterrupt,
                         halted: this.halted,
                         breakpoint: this.breakpoint,
-                        breakpointInterrupt: this.breakpointInterrupt
+                        breakpointInterrupt: this.breakpointInterrupt,
+                        running: this.running
                     },
                     on: {
                         step: this.step,
                         run: this.run,
+                        pause: this.pause,
                         breakpointChanged: this.onBreakpointChanged,
                         refreshRequested: this.doRefresh
                     }

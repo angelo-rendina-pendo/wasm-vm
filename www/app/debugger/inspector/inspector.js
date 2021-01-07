@@ -24,6 +24,10 @@ export default {
         breakpointInterrupt: {
             type: Boolean,
             default: false
+        },
+        running: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -48,6 +52,9 @@ export default {
         run() {
             this.$emit('run');
         },
+        pause() {
+            this.$emit('pause');
+        },
         onBreakpointChanged(event) {
             this.$emit('breakpointChanged', event.target.value);
         },
@@ -66,7 +73,7 @@ export default {
                         click: this.step
                     },
                     domProps: {
-                        disabled: this.halted
+                        disabled: this.halted || this.running
                     },
                 }, 'Step'),
                 h('button', {
@@ -74,9 +81,17 @@ export default {
                         click: this.run
                     },
                     domProps: {
-                        disabled: this.halted
+                        disabled: this.halted || this.running
                     }
                 }, 'Run'),
+                h('button', {
+                    on: {
+                        click: this.pause
+                    },
+                    domProps: {
+                        disabled: this.halted || !this.running
+                    }
+                }, 'Pause'),
                 h('input', {
                     attrs: {
                         type: 'number',
