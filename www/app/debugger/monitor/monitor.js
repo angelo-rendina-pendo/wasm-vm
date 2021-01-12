@@ -38,9 +38,14 @@ export default {
                     words.push(lb + 256 * hb);
                 }
                 let mnemonic = this.vm.disasm(address);
-                if (this.decodeASCII && mnemonic.startsWith('OUT')) {
-                    const v = parseInt(mnemonic.substring(4));
-                    mnemonic = `OUT '${String.fromCharCode(v)}'`;
+                if (this.decodeASCII) {
+                    if (mnemonic.startsWith('OUT')) {
+                        const v = parseInt(mnemonic.substring(4));
+                        mnemonic = `OUT '${String.fromCharCode(v)}'`;
+                    }
+                    if (mnemonic === '??') {
+                        mnemonic = String.fromCharCode(words[0]);
+                    }
                 }
                 lines.push({
                     address,

@@ -32,7 +32,8 @@ export default {
                 outToMacro: this.$refs.outToMacroCheckbox.checked,
                 jumpToLabel: this.$refs.jumpToLabelCheckbox.checked,
                 callToLabel: this.$refs.callToLabelCheckbox.checked,
-                memsToLabel: this.$refs.memsToLabelCheckbox.checked
+                memsToLabel: this.$refs.memsToLabelCheckbox.checked,
+                includeAddress: this.$refs.includeAddressCheckbox.checked
             };
             const lines = disassemble(this.vm, options);
             this.$emit('disassembled', lines.join('\n'));
@@ -241,6 +242,15 @@ export default {
                         }
                     }),
                     h('label', 'MEMs to label')
+                ]),
+                h('span', [
+                    h('input', {
+                        ref: 'includeAddressCheckbox',
+                        attrs: {
+                            type: 'checkbox'
+                        }
+                    }),
+                    h('label', 'Address as comments')
                 ]),
                 h('button', {
                     on: { click: this.disassemble }

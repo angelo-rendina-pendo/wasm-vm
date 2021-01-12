@@ -12,15 +12,16 @@
     width: 100%;
     overflow: auto;
 }
-#monitor__display > *:nth-child(even) {
-    background-color: rgb(250,250,250);
-}
 
 .monitor__display__line {
     width: 100%;
+    background-color: black;
+}
+.monitor__display__line * {
+    background-color: unset;
 }
 .monitor__display__line.active {
-    background-color: rgb(200, 240, 255) !important;
+    background-color: rgb(100, 70, 130) !important;
 }
 
 .monitor__display__line__address {

@@ -51,7 +51,14 @@ export function disassemble(vm, options) {
 
     let lines = [];
     let outBuffer = '';
+    let lastCommentAddress = 0;
     for (let address = 0; address < wordCount; address += vm.instruction_size(address)) {
+        if (address - lastCommentAddress > 50) {
+            lastCommentAddress = address;
+            if (options.includeAddress) {
+                lines.push(`# ${address}`)
+            }
+        }
         targetsInfo.forEach(({ list, label }) => {
             if (alignedTargets.has(address) && list.has(address)) {
                 lines.push(`${label}${address}`);
@@ -64,7 +71,14 @@ export function disassemble(vm, options) {
         if (options.outToMacro) {
             if (op === 19) {
                 const arg = readWord(vm, address + 1);
-                if (arg === 10) {
+                doPushMnemonic = false;
+                if (arg > 32767) {
+                    if (outBuffer) {
+                        lines.push(`!print \`${outBuffer}\``);
+                    }
+                    outBuffer = '';
+                    doPushMnemonic = true;
+                } else if (arg === 10) {
                     lines.push(`!println \`${outBuffer}\``);
                     outBuffer = '';
                 } else {
@@ -74,7 +88,6 @@ export function disassemble(vm, options) {
                         outBuffer = '';
                     }
                 }
-                doPushMnemonic = false;
             } else {
                 if (outBuffer) {
                     lines.push(`!print \`${outBuffer}\``);

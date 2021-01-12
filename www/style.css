@@ -2,6 +2,8 @@
 
 * {
     box-sizing: border-box;
+    background-color: black;
+    color: lightskyblue;
 }
 
 html,
@@ -10,4 +12,11 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+}
+
+button {
+    cursor: pointer;
+}
+button:hover {
+    background-color: rgb(75, 75, 125);
 }

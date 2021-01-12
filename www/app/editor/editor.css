@@ -21,7 +21,10 @@
     padding: 0 8px;
     display: flex;
     align-items: center;
-    background-color: azure;
+    background-color: rgb(50, 50, 70);
+}
+.editor__selector__entry * {
+    background-color: unset;
 }
 .editor__selector__entry > *:first-child {
     margin-right: 4px;
@@ -30,11 +33,11 @@
     cursor: pointer;
 }
 .editor__selector__entry:hover {
-    background-color: lightgrey;
+    background-color: rgb(75, 75, 125);
     cursor: pointer;
 }
 .editor__selector__entry.active {
-    background-color: lightblue;
+    background-color: darkmagenta;
 }
 .editor__selector__entry.active:hover {
     cursor: default;
